@@ -14,36 +14,55 @@ function App() {
       title : `${title}`,
       desc: `${desc}`
     }
-    setTodos(Tododata);
-
     fetch('http://localhost:8000/AddTodo' , {
       method: "POST",
       headers: {
-        'conntent-type' : 'application/json'
+        'content-type' : 'application/json'
       },
       body : JSON.stringify(Tododata)
       }).then((res)=>{
         return res.json();
       }).then((resp) => {
         console.log("Responce from backend is : " , resp);
+        GetTodo();
       }).catch((error) => {
         console.log("Error occured : " , error);
       })
   }
 
-  useEffect(() => {
+  const DeleteTodo = (id) => {
+    console.log("Id is here: " , id-1);
+    fetch(`http://localhost:8000/delete?todoId=${id}` , {
+      method: "Delete",
+    }).then((res)=>{
+      return res.json();
+    }).then((resp) => {
+      console.log("Delete resp",resp);
+      setTodos(resp?.Todo);
+    }).catch((error) => {
+      console.log("Error occured : " , error);
+    })
+  }
+
+  const GetTodo = () => {
     fetch('http://localhost:8000/GetTodo' , {
       method: "GET",
     }).then((res)=>{
       return res.json();
     }).then((resp) => {
-      console.log("Responce from backend is : " , resp);
       console.log(resp);
-      // setTodos(resp);
+      setTodos(resp);
     }).catch((error) => {
       console.log("Error occured : " , error);
     })
-  } , []);  
+  }
+  const handelUpdateevent = () => {
+    
+  }
+
+  useEffect(() => {
+    GetTodo();
+  } , [] )
 
   return (
     <>
@@ -57,20 +76,29 @@ function App() {
             <Button onClick={handelAddTodo} variant={'outlined'}>Add Todo</Button>
           </div>
           
-          <div className='w-full mr-32 h-96 bg-white p-8 rounded-lg overflow-auto'>
+          <div className='w-3/4 mr-32 h-96 bg-white p-8 rounded-lg overflow-auto'>
             <Typography variant='h5' style={{'textAlign': 'center'}}>Todo List</Typography>
+            <div className='flex flex-wrap gap-4 mt-2'>
+
             {
-              Todos && 
+              Todos.length > 0 && 
                 Todos.map((data) => {
-                  return (<div className="flex justify-center items-center gap-4" key = {data?.id}>
-                  <li className='flex list-none gap-4'>
-                    <span>{data?.title}</span>
-                    <span>{data?.desc}</span>
-                    <span className='hover:cursor-pointer'>&#10060;</span>
-                  </li>
-                </div>)
+                  return (
+                    <div className="flex justify-center rounded-md items-center gap-16" key = {data?.id}>
+                      <div className='flex flex-col shadow-md gap-4 p-4'>
+                        <span className='text-xl font-extrabold'>Title: {data?.title}</span>
+                        <span className='font-semibold'>Description: {data?.desc}</span>
+                        <div className='flex gap-4'>
+                          <Button onClick={handelUpdateevent} variant='outlined'>Update Todo</Button>
+                          <Button onClick={() => DeleteTodo(data?.id)} variant={'outlined'} color={'error'}>Remove / Completed</Button>
+                        </div>
+                      </div>
+                    </div>
+                  )
                 })
               }
+
+            </div>
           </div>
       </div>
     </>

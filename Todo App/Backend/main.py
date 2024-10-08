@@ -8,7 +8,6 @@ todo = []
 id = 0
 
 class Item(BaseModel):
-    id: int
     title: str
     desc: str
 
@@ -38,7 +37,7 @@ def AddTodo(item : Item):
     todo.append({'id' : id , 'title' : item.title , 'desc': item.desc})
     return {'success': True , 'message': 'Todo Added Successfully' , 'Todo' : todo}
 
-@app.post('/UpdateTodo/{todoId}')
+@app.post('/UpdateTodo')
 def UpdateTodo(todoId: int , item: Item):
     for i in todo:
         if todoId == i['id']:
@@ -47,3 +46,13 @@ def UpdateTodo(todoId: int , item: Item):
             return {'success' : True , 'message' : 'Todo Updated Successfully' , 'Todo' : todo}
     
     raise HTTPException(status_code=404, detail="Todo not found")
+
+@app.delete('/delete')
+def DeleteTodo(todoId: int):
+    for t in range(len(todo)):
+        if todo[t]['id'] == todoId:
+            todo.pop(t)
+            return {'success' : True , 'message' : 'Todo Deleted Successfully' , 'Todo' : todo}
+    
+    return {'success': False , 'message' : 'Todo not Deleted or not find' , 'Todo' : todo}
+    
