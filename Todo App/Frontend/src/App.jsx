@@ -1,6 +1,7 @@
 import {Button, TextField, Typography} from '@mui/material';
 import React , {useState} from 'react';
 import { useEffect } from 'react';
+import Card from './Card';
 function App() {
   const [Todos , setTodos] = useState([]);
   const [title , setTitle] = useState();
@@ -30,19 +31,7 @@ function App() {
       })
   }
 
-  const DeleteTodo = (id) => {
-    console.log("Id is here: " , id-1);
-    fetch(`http://localhost:8000/delete?todoId=${id}` , {
-      method: "Delete",
-    }).then((res)=>{
-      return res.json();
-    }).then((resp) => {
-      console.log("Delete resp",resp);
-      setTodos(resp?.Todo);
-    }).catch((error) => {
-      console.log("Error occured : " , error);
-    })
-  }
+  
 
   const GetTodo = () => {
     fetch('http://localhost:8000/GetTodo' , {
@@ -56,9 +45,7 @@ function App() {
       console.log("Error occured : " , error);
     })
   }
-  const handelUpdateevent = () => {
-    
-  }
+ 
 
   useEffect(() => {
     GetTodo();
@@ -84,16 +71,7 @@ function App() {
               Todos.length > 0 && 
                 Todos.map((data) => {
                   return (
-                    <div className="flex justify-center rounded-md items-center gap-16" key = {data?.id}>
-                      <div className='flex flex-col shadow-md gap-4 p-4'>
-                        <span className='text-xl font-extrabold'>Title: {data?.title}</span>
-                        <span className='font-semibold'>Description: {data?.desc}</span>
-                        <div className='flex gap-4'>
-                          <Button onClick={handelUpdateevent} variant='outlined'>Update Todo</Button>
-                          <Button onClick={() => DeleteTodo(data?.id)} variant={'outlined'} color={'error'}>Remove / Completed</Button>
-                        </div>
-                      </div>
-                    </div>
+                    <Card todo={data}/>
                   )
                 })
               }
